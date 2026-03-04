@@ -412,6 +412,7 @@
             const save = (income * 0.15).toFixed(2);
             const expense = (income * 0.50).toFixed(2);
             const give = (income * 0.10).toFixed(2);
+            const reward = (income * 0.5).toFixed(2);
             
             document.getElementById('result').innerHTML = `
                 <div class="result">
@@ -422,6 +423,7 @@
                         <tr><td>🏦 Savings</td><td>15%</td><td>$${parseFloat(save).toLocaleString()}</td></tr>
                         <tr><td>🏠 Expenses</td><td>50%</td><td>$${parseFloat(expense).toLocaleString()}</td></tr>
                         <tr><td>❤️ Giving</td><td>10%</td><td>$${parseFloat(give).toLocaleString()}</td></tr>
+                         <tr><td>🏠 Reward</td><td>5%</td><td>$${parseFloat(reward).toLocaleString()}</td></tr>
                        
                 </div>
             `;
