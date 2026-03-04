@@ -9,6 +9,51 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .login-container h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .login-container button:hover {
+            background: #764ba2;
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
         }
         .container {
             max-width: 1200px;
@@ -16,10 +61,23 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
+            display: none;
+        }
+        .container.show {
+            display: block;
         }
         h1 {
             color: #667eea;
             text-align: center;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
         }
         .card {
             background: #f8f9fa;
@@ -34,6 +92,7 @@
             margin: 5px 0;
             border: 2px solid #e0e0e0;
             border-radius: 5px;
+            box-sizing: border-box;
         }
         button {
             background: #667eea;
@@ -71,7 +130,18 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <h1>🔒 Financial Tracker</h1>
+        <p>Enter your password to access</p>
+        <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter') checkPassword()">
+        <button onclick="checkPassword()">Login</button>
+        <p class="error" id="errorMsg">Incorrect password. Please try again.</p>
+    </div>
+
+    <!-- Main App (Hidden until login) -->
+    <div class="container" id="mainApp">
+        <button class="logout-btn" onclick="logout()">Logout</button>
         <h1>💰 Ola's Financial Tracker</h1>
         
         <div class="card">
@@ -95,9 +165,55 @@
             <button onclick="calcEmergency()">Calculate</button>
             <div id="emergency-result"></div>
         </div>
+
+        <div class="card">
+            <h2>Goal Savings Calculator</h2>
+            <label>Goal Name</label>
+            <input type="text" id="goalName" value="House Down Payment">
+            <label>Target Amount ($)</label>
+            <input type="number" id="goalAmount" placeholder="60000">
+            <label>Timeline (Months)</label>
+            <input type="number" id="goalMonths" placeholder="36">
+            <button onclick="calcGoal()">Calculate Plan</button>
+            <div id="goal-result"></div>
+        </div>
     </div>
 
     <script>
+        // ⚠️ CHANGE THIS PASSWORD TO YOUR OWN! ⚠️
+        const CORRECT_PASSWORD = "J35u515L0rd1!";  // Change this to your preferred password
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            if (input === CORRECT_PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.add('show');
+                sessionStorage.setItem('loggedIn', 'true');
+                calculate();
+                calcEmergency();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('loggedIn');
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('mainApp').classList.remove('show');
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // Check if already logged in
+        window.onload = function() {
+            if (sessionStorage.getItem('loggedIn') === 'true') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.add('show');
+                calculate();
+                calcEmergency();
+            }
+        }
+
         function calculate() {
             const income = parseFloat(document.getElementById('income').value) || 0;
             const invest = (income * 0.25).toFixed(2);
@@ -133,9 +249,27 @@
             `;
         }
 
-        // Auto-calculate on load
-        calculate();
-        calcEmergency();
+        function calcGoal() {
+            const name = document.getElementById('goalName').value || 'Your Goal';
+            const amount = parseFloat(document.getElementById('goalAmount').value) || 0;
+            const months = parseInt(document.getElementById('goalMonths').value) || 0;
+            
+            if (!amount || !months) {
+                alert('Please enter target amount and timeline');
+                return;
+            }
+            
+            const monthly = (amount / months).toFixed(2);
+            
+            document.getElementById('goal-result').innerHTML = `
+                <div class="result">
+                    <h3>${name} Savings Plan</h3>
+                    <p><strong>Target Amount:</strong> $${amount.toLocaleString()}</p>
+                    <p><strong>Timeline:</strong> ${months} months (${(months/12).toFixed(1)} years)</p>
+                    <p><strong>Monthly Savings Needed:</strong> $${parseFloat(monthly).toLocaleString()}</p>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>
