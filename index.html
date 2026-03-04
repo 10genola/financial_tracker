@@ -407,28 +407,27 @@
         }
 
         function calculate() {
-            const income = parseFloat(document.getElementById('income').value) || 0;
-            const invest = (income * 0.25).toFixed(2);
-            const save = (income * 0.15).toFixed(2);
-            const expense = (income * 0.50).toFixed(2);
-            const give = (income * 0.10).toFixed(2);
-            const reward = (income * 0.05).toFixed(2);
-            
-            document.getElementById('result').innerHTML = `
-                <div class="result">
-                    <h3>Your Budget for $${income.toLocaleString()}/month:</h3>
-                    <table>
-                        <tr><th>Category</th><th>Percentage</th><th>Amount</th></tr>
-                        <tr><td>💼 Investments</td><td>20%</td><td>$${parseFloat(invest).toLocaleString()}</td></tr>
-                        <tr><td>🏦 Savings</td><td>15%</td><td>$${parseFloat(save).toLocaleString()}</td></tr>
-                        <tr><td>🏠 Expenses</td><td>50%</td><td>$${parseFloat(expense).toLocaleString()}</td></tr>
-                        <tr><td>❤️ Giving</td><td>10%</td><td>$${parseFloat(give).toLocaleString()}</td></tr>
-                        <tr><td>🎁 Reward</td><td>5%</td><td>$${parseFloat(reward).toLocaleString()}</td></tr>
-                    </table>
-                </div>
-            `;
-        }
-
+    const income = parseFloat(document.getElementById('income').value) || 0;
+    const invest = (income * 0.20).toFixed(2);
+    const save = (income * 0.15).toFixed(2);
+    const expense = (income * 0.50).toFixed(2);
+    const give = (income * 0.10).toFixed(2);
+    const reward = (income * 0.05).toFixed(2);
+    
+    document.getElementById('result').innerHTML = `
+        <div class="result">
+            <h3>Your Budget for $${income.toLocaleString()}/month:</h3>
+            <table>
+                <tr><th>Category</th><th>Percentage</th><th>Amount</th></tr>
+                <tr><td>💼 Investments</td><td>20%</td><td>$${parseFloat(invest).toLocaleString()}</td></tr>
+                <tr><td>🏦 Savings</td><td>15%</td><td>$${parseFloat(save).toLocaleString()}</td></tr>
+                <tr><td>🏠 Expenses</td><td>50%</td><td>$${parseFloat(expense).toLocaleString()}</td></tr>
+                <tr><td>❤️ Giving</td><td>10%</td><td>$${parseFloat(give).toLocaleString()}</td></tr>
+                <tr><td>🎁 Reward</td><td>5%</td><td>$${parseFloat(reward).toLocaleString()}</td></tr>
+            </table>
+        </div>
+    `;
+}
         function calcEmergency() {
             const exp = parseFloat(document.getElementById('expenses').value) || 0;
             const months = parseInt(document.getElementById('months').value) || 6;
