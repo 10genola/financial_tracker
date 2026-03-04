@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .result {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Ola's Financial Tracker</h1>
+        
+        <div class="card">
+            <h2>25-15-50-10 Budget Calculator</h2>
+            <label>Monthly Income ($)</label>
+            <input type="number" id="income" value="5000">
+            <button onclick="calculate()">Calculate Budget</button>
+            <div id="result"></div>
+        </div>
+
+        <div class="card">
+            <h2>Emergency Fund Calculator</h2>
+            <label>Monthly Expenses ($)</label>
+            <input type="number" id="expenses" value="2500">
+            <label>Target Months</label>
+            <select id="months">
+                <option value="3">3 Months</option>
+                <option value="6" selected>6 Months</option>
+                <option value="9">9 Months</option>
+            </select>
+            <button onclick="calcEmergency()">Calculate</button>
+            <div id="emergency-result"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            const invest = (income * 0.25).toFixed(2);
+            const save = (income * 0.15).toFixed(2);
+            const expense = (income * 0.50).toFixed(2);
+            const give = (income * 0.10).toFixed(2);
+            
+            document.getElementById('result').innerHTML = `
+                <div class="result">
+                    <h3>Your Budget for $${income.toLocaleString()}/month:</h3>
+                    <table>
+                        <tr><th>Category</th><th>Percentage</th><th>Amount</th></tr>
+                        <tr><td>💼 Investments</td><td>25%</td><td>$${parseFloat(invest).toLocaleString()}</td></tr>
+                        <tr><td>🏦 Savings</td><td>15%</td><td>$${parseFloat(save).toLocaleString()}</td></tr>
+                        <tr><td>🏠 Expenses</td><td>50%</td><td>$${parseFloat(expense).toLocaleString()}</td></tr>
+                        <tr><td>❤️ Giving</td><td>10%</td><td>$${parseFloat(give).toLocaleString()}</td></tr>
+                    </table>
+                </div>
+            `;
+        }
+
+        function calcEmergency() {
+            const exp = parseFloat(document.getElementById('expenses').value) || 0;
+            const months = parseInt(document.getElementById('months').value) || 6;
+            const target = exp * months;
+            
+            document.getElementById('emergency-result').innerHTML = `
+                <div class="result">
+                    <h3>Emergency Fund Target</h3>
+                    <p><strong>Monthly Expenses:</strong> $${exp.toLocaleString()}</p>
+                    <p><strong>Target (${months} months):</strong> $${target.toLocaleString()}</p>
+                </div>
+            `;
+        }
+
+        // Auto-calculate on load
+        calculate();
+        calcEmergency();
+    </script>
+</body>
+</html>
