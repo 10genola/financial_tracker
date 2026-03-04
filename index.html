@@ -56,12 +56,15 @@
             display: none;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
             background: white;
             padding: 30px;
             border-radius: 15px;
             display: none;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .container.show {
             display: block;
@@ -69,6 +72,7 @@
         h1 {
             color: #667eea;
             text-align: center;
+            margin-bottom: 20px;
         }
         .logout-btn {
             background: #dc3545;
@@ -78,6 +82,7 @@
             border-radius: 5px;
             cursor: pointer;
             float: right;
+            margin-bottom: 10px;
         }
         .card {
             background: #f8f9fa;
@@ -86,6 +91,24 @@
             border-radius: 10px;
             border-left: 4px solid #667eea;
         }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
         input, select {
             width: 100%;
             padding: 10px;
@@ -93,6 +116,11 @@
             border: 2px solid #e0e0e0;
             border-radius: 5px;
             box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
         }
         button {
             background: #667eea;
@@ -102,9 +130,18 @@
             border-radius: 8px;
             cursor: pointer;
             margin-top: 10px;
+            font-size: 14px;
         }
         button:hover {
             background: #764ba2;
+        }
+        .delete-btn {
+            background: #dc3545;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .delete-btn:hover {
+            background: #c82333;
         }
         .result {
             background: #667eea;
@@ -112,6 +149,9 @@
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
+        }
+        .result h3, .result h4 {
+            margin-bottom: 10px;
         }
         table {
             width: 100%;
@@ -126,6 +166,37 @@
         th {
             background: #667eea;
             color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #333;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .stat-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .stat-summary h3 {
+            margin: 5px 0;
+            font-size: 2em;
         }
     </style>
 </head>
@@ -144,6 +215,7 @@
         <button class="logout-btn" onclick="logout()">Logout</button>
         <h1>💰 Ola's Financial Tracker</h1>
         
+        <!-- Budget Calculator -->
         <div class="card">
             <h2>25-15-50-10 Budget Calculator</h2>
             <label>Monthly Income ($)</label>
@@ -152,36 +224,155 @@
             <div id="result"></div>
         </div>
 
+        <!-- Debt Tracker -->
         <div class="card">
-            <h2>Emergency Fund Calculator</h2>
+            <h2>💳 Debt Payoff Tracker (Avalanche Method)</h2>
+            <div class="info-box">
+                <strong>Avalanche Method:</strong> Pay off debts with highest interest rate first to save the most money on interest.
+            </div>
+            
+            <h3>Add a Debt</h3>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>Debt Name</label>
+                    <input type="text" id="debtName" placeholder="Credit Card 1">
+                </div>
+                <div class="input-group">
+                    <label>Balance ($)</label>
+                    <input type="number" id="debtBalance" placeholder="5000">
+                </div>
+                <div class="input-group">
+                    <label>Interest Rate (%)</label>
+                    <input type="number" step="0.01" id="debtRate" placeholder="18.99">
+                </div>
+                <div class="input-group">
+                    <label>Minimum Payment ($)</label>
+                    <input type="number" id="debtMinimum" placeholder="150">
+                </div>
+            </div>
+            <button onclick="addDebt()">Add Debt</button>
+            
+            <div id="debtList" style="margin-top: 20px;">
+                <p style="color: #999;">No debts added yet. Add your first debt above!</p>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>Debt Payoff Calculator</h3>
+                <label>Extra Monthly Payment (Beyond Minimums) ($)</label>
+                <input type="number" id="extraPayment" placeholder="500">
+                <button onclick="calculatePayoff()">Calculate Payoff Timeline</button>
+                <div id="payoffResult"></div>
+            </div>
+        </div>
+
+        <!-- Emergency Fund Calculator -->
+        <div class="card">
+            <h2>🛡️ Emergency Fund Calculator</h2>
             <label>Monthly Expenses ($)</label>
             <input type="number" id="expenses" value="2500">
             <label>Target Months</label>
             <select id="months">
                 <option value="3">3 Months</option>
-                <option value="6" selected>6 Months</option>
+                <option value="6" selected>6 Months (Recommended)</option>
                 <option value="9">9 Months</option>
+                <option value="12">12 Months</option>
             </select>
             <button onclick="calcEmergency()">Calculate</button>
             <div id="emergency-result"></div>
         </div>
 
+        <!-- Goal Savings Calculator -->
         <div class="card">
-            <h2>Goal Savings Calculator</h2>
+            <h2>🎯 Goal Savings Calculator</h2>
             <label>Goal Name</label>
             <input type="text" id="goalName" value="House Down Payment">
             <label>Target Amount ($)</label>
             <input type="number" id="goalAmount" placeholder="60000">
             <label>Timeline (Months)</label>
             <input type="number" id="goalMonths" placeholder="36">
+            <label>Current Savings ($)</label>
+            <input type="number" id="goalCurrent" value="0">
             <button onclick="calcGoal()">Calculate Plan</button>
             <div id="goal-result"></div>
+        </div>
+
+        <!-- Net Worth Calculator -->
+        <div class="card">
+            <h2>📈 Net Worth Calculator</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="color: #28a745;">Assets</h3>
+                    <div class="input-group">
+                        <label>Cash & Checking</label>
+                        <input type="number" class="asset" id="asset1" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Emergency Fund</label>
+                        <input type="number" class="asset" id="asset2" value="7500">
+                    </div>
+                    <div class="input-group">
+                        <label>Goal Savings</label>
+                        <input type="number" class="asset" id="asset3" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Investment Accounts</label>
+                        <input type="number" class="asset" id="asset4" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Retirement (401k/IRA)</label>
+                        <input type="number" class="asset" id="asset5" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Home Value</label>
+                        <input type="number" class="asset" id="asset6" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Vehicle Value</label>
+                        <input type="number" class="asset" id="asset7" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Other Assets</label>
+                        <input type="number" class="asset" id="asset8" value="0">
+                    </div>
+                </div>
+                <div>
+                    <h3 style="color: #dc3545;">Liabilities (Debts)</h3>
+                    <div class="input-group">
+                        <label>Credit Card Debt</label>
+                        <input type="number" class="liability" id="liability1" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Personal Loans</label>
+                        <input type="number" class="liability" id="liability2" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Mortgage Balance</label>
+                        <input type="number" class="liability" id="liability3" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Auto Loans</label>
+                        <input type="number" class="liability" id="liability4" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Student Loans</label>
+                        <input type="number" class="liability" id="liability5" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Other Debts</label>
+                        <input type="number" class="liability" id="liability6" value="0">
+                    </div>
+                </div>
+            </div>
+            <button onclick="calculateNetWorth()">Calculate Net Worth</button>
+            <div id="networth-result"></div>
         </div>
     </div>
 
     <script>
         // ⚠️ CHANGE THIS PASSWORD TO YOUR OWN! ⚠️
         const CORRECT_PASSWORD = "J35u515L0rd1!";  // Change this to your preferred password
+
+        let debts = [];
 
         function checkPassword() {
             const input = document.getElementById('passwordInput').value;
@@ -211,6 +402,7 @@
                 document.getElementById('mainApp').classList.add('show');
                 calculate();
                 calcEmergency();
+                loadDebts();
             }
         }
 
@@ -245,6 +437,9 @@
                     <h3>Emergency Fund Target</h3>
                     <p><strong>Monthly Expenses:</strong> $${exp.toLocaleString()}</p>
                     <p><strong>Target (${months} months):</strong> $${target.toLocaleString()}</p>
+                    <div class="info-box" style="margin-top: 15px; background: white;">
+                        💡 Keep this in a high-yield savings account (4-5% APY) for easy access during emergencies.
+                    </div>
                 </div>
             `;
         }
@@ -253,20 +448,183 @@
             const name = document.getElementById('goalName').value || 'Your Goal';
             const amount = parseFloat(document.getElementById('goalAmount').value) || 0;
             const months = parseInt(document.getElementById('goalMonths').value) || 0;
+            const current = parseFloat(document.getElementById('goalCurrent').value) || 0;
             
             if (!amount || !months) {
                 alert('Please enter target amount and timeline');
                 return;
             }
             
-            const monthly = (amount / months).toFixed(2);
+            const remaining = amount - current;
+            const monthly = (remaining / months).toFixed(2);
+            const progress = ((current / amount) * 100).toFixed(1);
             
             document.getElementById('goal-result').innerHTML = `
                 <div class="result">
                     <h3>${name} Savings Plan</h3>
                     <p><strong>Target Amount:</strong> $${amount.toLocaleString()}</p>
+                    <p><strong>Current Savings:</strong> $${current.toLocaleString()}</p>
+                    <p><strong>Remaining:</strong> $${remaining.toLocaleString()}</p>
                     <p><strong>Timeline:</strong> ${months} months (${(months/12).toFixed(1)} years)</p>
                     <p><strong>Monthly Savings Needed:</strong> $${parseFloat(monthly).toLocaleString()}</p>
+                    <p><strong>Progress:</strong> ${progress}%</p>
+                </div>
+            `;
+        }
+
+        // Debt Tracker Functions
+        function addDebt() {
+            const name = document.getElementById('debtName').value;
+            const balance = parseFloat(document.getElementById('debtBalance').value) || 0;
+            const rate = parseFloat(document.getElementById('debtRate').value) || 0;
+            const minimum = parseFloat(document.getElementById('debtMinimum').value) || 0;
+            
+            if (!name || !balance) {
+                alert('Please enter debt name and balance');
+                return;
+            }
+            
+            debts.push({ name, balance, rate, minimum });
+            debts.sort((a, b) => b.rate - a.rate); // Sort by highest rate first
+            
+            saveDebts();
+            displayDebts();
+            
+            // Clear inputs
+            document.getElementById('debtName').value = '';
+            document.getElementById('debtBalance').value = '';
+            document.getElementById('debtRate').value = '';
+            document.getElementById('debtMinimum').value = '';
+        }
+
+        function displayDebts() {
+            if (debts.length === 0) {
+                document.getElementById('debtList').innerHTML = '<p style="color: #999;">No debts added yet. Add your first debt above!</p>';
+                return;
+            }
+            
+            let totalDebt = 0;
+            let totalMinimum = 0;
+            
+            let html = '<table><tr><th>Debt Name</th><th>Balance</th><th>Rate</th><th>Min Payment</th><th>Priority</th><th>Action</th></tr>';
+            
+            debts.forEach((debt, index) => {
+                totalDebt += debt.balance;
+                totalMinimum += debt.minimum;
+                html += `
+                    <tr>
+                        <td>${debt.name}</td>
+                        <td>$${debt.balance.toLocaleString()}</td>
+                        <td>${debt.rate}%</td>
+                        <td>$${debt.minimum.toLocaleString()}</td>
+                        <td>${index === 0 ? '🎯 Attack First!' : index + 1}</td>
+                        <td><button class="delete-btn" onclick="deleteDebt(${index})">Delete</button></td>
+                    </tr>
+                `;
+            });
+            
+            html += '</table>';
+            
+            html += `
+                <div class="stat-summary" style="margin-top: 20px;">
+                    <div><strong>Total Debt:</strong></div>
+                    <h3>$${totalDebt.toLocaleString()}</h3>
+                    <div style="margin-top: 10px;"><strong>Total Minimum Payments:</strong> $${totalMinimum.toLocaleString()}/month</div>
+                </div>
+            `;
+            
+            document.getElementById('debtList').innerHTML = html;
+        }
+
+        function deleteDebt(index) {
+            if (confirm('Are you sure you want to delete this debt?')) {
+                debts.splice(index, 1);
+                saveDebts();
+                displayDebts();
+            }
+        }
+
+        function calculatePayoff() {
+            if (debts.length === 0) {
+                alert('Please add your debts first');
+                return;
+            }
+            
+            const extraPayment = parseFloat(document.getElementById('extraPayment').value) || 0;
+            
+            let totalMinimum = debts.reduce((sum, debt) => sum + debt.minimum, 0);
+            let totalPayment = totalMinimum + extraPayment;
+            let totalDebt = debts.reduce((sum, debt) => sum + debt.balance, 0);
+            
+            // Simplified calculation (rough estimate)
+            let months = Math.ceil(totalDebt / totalPayment);
+            
+            document.getElementById('payoffResult').innerHTML = `
+                <div class="result">
+                    <h4>Debt Payoff Estimate</h4>
+                    <p><strong>Total Debt:</strong> $${totalDebt.toLocaleString()}</p>
+                    <p><strong>Total Monthly Payment:</strong> $${totalPayment.toLocaleString()}</p>
+                    <p style="margin-top: 10px;"><em>(Minimums: $${totalMinimum.toLocaleString()} + Extra: $${extraPayment.toLocaleString()})</em></p>
+                    <p style="margin-top: 15px;"><strong>Estimated Payoff:</strong> ${months} months (${(months/12).toFixed(1)} years)</p>
+                    <p style="margin-top: 10px;"><strong>Strategy:</strong> Attack "${debts[0].name}" first (highest rate: ${debts[0].rate}%)</p>
+                    <div class="info-box" style="margin-top: 15px; background: white;">
+                        💡 This is a simplified estimate. Actual timeline depends on interest accrual and payment consistency. Once you pay off the first debt, roll that payment into the next one (snowball effect)!
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveDebts() {
+            localStorage.setItem('debts', JSON.stringify(debts));
+        }
+
+        function loadDebts() {
+            const saved = localStorage.getItem('debts');
+            if (saved) {
+                debts = JSON.parse(saved);
+                displayDebts();
+            }
+        }
+
+        // Net Worth Calculator
+        function calculateNetWorth() {
+            let totalAssets = 0;
+            let totalLiabilities = 0;
+            
+            document.querySelectorAll('.asset').forEach(input => {
+                totalAssets += parseFloat(input.value) || 0;
+            });
+            
+            document.querySelectorAll('.liability').forEach(input => {
+                totalLiabilities += parseFloat(input.value) || 0;
+            });
+            
+            const netWorth = totalAssets - totalLiabilities;
+            
+            document.getElementById('networth-result').innerHTML = `
+                <div class="result">
+                    <h3>Net Worth Summary</h3>
+                    <div class="grid-2" style="margin-top: 15px;">
+                        <div>
+                            <p><strong>Total Assets:</strong></p>
+                            <h3 style="color: #28a745; margin: 5px 0;">$${totalAssets.toLocaleString()}</h3>
+                        </div>
+                        <div>
+                            <p><strong>Total Liabilities:</strong></p>
+                            <h3 style="color: #dc3545; margin: 5px 0;">$${totalLiabilities.toLocaleString()}</h3>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 20px; background: ${netWorth >= 0 ? 'rgba(40, 167, 69, 0.2)' : 'rgba(220, 53, 69, 0.2)'}; border-radius: 10px;">
+                        <p style="font-size: 1.2em;"><strong>Your Net Worth:</strong></p>
+                        <h2 style="font-size: 2.5em; margin: 10px 0; color: ${netWorth >= 0 ? '#28a745' : '#dc3545'};">
+                            ${netWorth >= 0 ? '+' : ''}$${netWorth.toLocaleString()}
+                        </h2>
+                    </div>
+                    
+                    <div class="info-box" style="margin-top: 15px; background: white;">
+                        💡 Track your net worth monthly to see your financial progress over time. Your goal is to increase it every month by paying down debt and growing assets!
+                    </div>
                 </div>
             `;
         }
